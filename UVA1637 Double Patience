@@ -1,0 +1,98 @@
+#include <cstdio>
+#include <cctype>
+#include <cstring>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+namespace thecold
+{
+	char c[10];
+
+	double ans[5][5][5][5][5][5][5][5][5];
+
+	bool vis[5][5][5][5][5][5][5][5][5];
+
+	int num[15][10] , top[15];
+
+	inline bool check(int* a)
+	{
+		for(int i = 1 ; i <= 9 ; ++ i)
+			if(a[i])	return false;
+		return true;
+	}
+
+	map<char , int> mp;
+
+	double dfs(int* a)
+	{
+		double ret = 0;
+		int cnt = 0;
+		if(check(a))
+			return 1;
+		if(vis[a[1]][a[2]][a[3]][a[4]][a[5]][a[6]][a[7]][a[8]][a[9]])
+			return ans[a[1]][a[2]][a[3]][a[4]][a[5]][a[6]][a[7]][a[8]][a[9]];
+		vis[a[1]][a[2]][a[3]][a[4]][a[5]][a[6]][a[7]][a[8]][a[9]] = true;
+		for(int i = 1 ; i <= 9 ; ++ i)
+			for(int j = i + 1 ; j <= 9 ; ++ j)
+				if(a[i] && a[j] && num[i][a[i]] == num[j][a[j]])
+				{
+					++ cnt;
+					-- a[i] , -- a[j];
+					ret += dfs(a);
+					++ a[i] , ++ a[j];
+				}
+		if(!cnt)
+			return ans[a[1]][a[2]][a[3]][a[4]][a[5]][a[6]][a[7]][a[8]][a[9]] = 0;
+		else return ans[a[1]][a[2]][a[3]][a[4]][a[5]][a[6]][a[7]][a[8]][a[9]] = ret / cnt;
+	}
+
+	inline void main()
+	{
+		mp['T'] = 10 , mp['J'] = 11 , mp['Q'] = 12 , mp['K'] = 13 , mp['A'] = 14;
+		while(scanf("%s" , c + 1) != EOF)
+		{
+			memset(vis , false , sizeof(vis));
+			if(isdigit(c[1]))
+				num[1][1] = c[1] - '0';
+			else num[1][1] = mp[c[1]];				
+			for(int j = 2 ; j <= 4 ; ++ j)
+			{
+				scanf("%s" , c + 1);
+				if(isdigit(c[1]))
+					num[1][j] = c[1] - '0';
+				else num[1][j] = mp[c[1]];				
+			}
+			for(int i = 2 ; i <= 9 ; ++ i)
+				for(int j = 1 ; j <= 4 ; ++ j)
+				{
+					scanf("%s" , c + 1);
+					if(isdigit(c[1]))
+						num[i][j] = c[1] - '0';
+					else num[i][j] = mp[c[1]];
+				}
+			for(int i = 1 ; i <= 9 ; ++ i)
+				top[i] = 4;
+			printf("%.6lf\n" , dfs(top));			
+		}
+	}
+}
+
+int main()
+{
+	// freopen("data.out" , "w" , stdout);
+	thecold::main();
+	return 0;
+}
+/*
+KC 7H 9D 7S
+6H TH AH 8H
+7D TD 8C JD
+8S KH JS 9H
+6C 9C QH AS
+7C 6D 9S AD
+QS AC QD JC
+8D QC KD 6S
+KS TS JH TC
+0.717483
+*/
